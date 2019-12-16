@@ -6,13 +6,23 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
+//use Android Resizer to get all the image sizes needed
+//create a folder to temporarily store them in then set the resource directory to that
+//select the input density then click the boxes for the versions wanted and drag the images over
+//versions will show up in the temporary folder
+//once all images have been added, copy all the folders and paste them into Android Studio
+
 public class MainActivity extends AppCompatActivity {
 
     private ViewGroup mContentView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //display the background and the application starts up
+        getWindow().setBackgroundDrawableResource(R.drawable.modern_background);
 
         //object that can be referenced to see things in full screen view
         mContentView = findViewById(R.id.activity_main);
