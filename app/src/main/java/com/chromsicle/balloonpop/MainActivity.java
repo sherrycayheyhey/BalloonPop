@@ -3,6 +3,7 @@ package com.chromsicle.balloonpop;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -32,6 +33,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 setToFullScreen();
+            }
+        });
+
+        mContentView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    Balloon b = new Balloon(MainActivity.this, 0xFFFF0000, 100);
+                    b.setX(motionEvent.getX());
+                    b.setY(motionEvent.getY());
+                    mContentView.addView(b);
+                }
+
+                return false;
             }
         });
     }
