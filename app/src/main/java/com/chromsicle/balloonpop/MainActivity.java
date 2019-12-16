@@ -37,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setToFullScreen() {
+        //look directly at the root element instead of other elements
+        ViewGroup rootLayout = (ViewGroup) findViewById(R.id.activity_main);
+        rootLayout.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
         mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
                 | View.SYSTEM_UI_FLAG_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
