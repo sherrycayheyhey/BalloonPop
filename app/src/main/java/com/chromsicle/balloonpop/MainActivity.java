@@ -2,6 +2,7 @@ package com.chromsicle.balloonpop;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,10 +18,18 @@ public class MainActivity extends AppCompatActivity {
 
     private ViewGroup mContentView;
 
+    private int[] mBalloonColors = new int [3];
+    private int mNextColor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //balloon colors
+        mBalloonColors[0] = Color.argb(255, 255, 0, 0);
+        mBalloonColors[1] = Color.argb(255, 0, 255, 0);
+        mBalloonColors[2] = Color.argb(255, 0, 0, 255);
 
         //display the background and the application starts up
         getWindow().setBackgroundDrawableResource(R.drawable.modern_background);
@@ -40,10 +49,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    Balloon b = new Balloon(MainActivity.this, 0xFFFF0000, 100);
+                    Balloon b = new Balloon(MainActivity.this, mBalloonColors[mNextColor], 100);
                     b.setX(motionEvent.getX());
                     b.setY(motionEvent.getY());
                     mContentView.addView(b);
+
+                    if(mNextColor + 1 == mBalloonColors.length) {
+                        mNextColor = 0;
+                    } else {
+                        mNextColor++;
+                    }
                 }
 
                 return false;

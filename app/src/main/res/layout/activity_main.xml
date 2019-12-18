@@ -22,7 +22,7 @@
             android:layout_width="@dimen/pin_size"
             android:layout_height="@dimen/pin_size"
             android:contentDescription="@string/popping_pin"
-            app:srcCompat="@drawable/pin"
+            android:src="@drawable/pin"
             android:tint="@color/pinColor" />
 
         <ImageView
@@ -30,7 +30,7 @@
             android:layout_width="@dimen/pin_size"
             android:layout_height="@dimen/pin_size"
             android:contentDescription="@string/popping_pin"
-            app:srcCompat="@drawable/pin"
+            android:src="@drawable/pin"
             android:tint="@color/pinColor" />
 
         <ImageView
@@ -38,7 +38,7 @@
             android:layout_width="@dimen/pin_size"
             android:layout_height="@dimen/pin_size"
             android:contentDescription="@string/popping_pin"
-            app:srcCompat="@drawable/pin"
+            android:src="@drawable/pin"
             android:tint="@color/pinColor" />
 
         <ImageView
@@ -46,7 +46,7 @@
             android:layout_width="@dimen/pin_size"
             android:layout_height="@dimen/pin_size"
             android:contentDescription="@string/popping_pin"
-            app:srcCompat="@drawable/pin"
+            android:src="@drawable/pin"
             android:tint="@color/pinColor" />
 
         <ImageView
@@ -54,7 +54,7 @@
             android:layout_width="@dimen/pin_size"
             android:layout_height="@dimen/pin_size"
             android:contentDescription="@string/popping_pin"
-            app:srcCompat="@drawable/pin"
+            android:src="@drawable/pin"
             android:tint="@color/pinColor" />
 
     </LinearLayout>
