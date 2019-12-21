@@ -19,7 +19,8 @@ import java.util.Random;
 //versions will show up in the temporary folder
 //once all images have been added, copy all the folders and paste them into Android Studio
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+    implements Balloon.BalloonListener{
 
     private ViewGroup mContentView;
 
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int MIN_ANIMATION_DURATION = 1000;
     public static final int MAX_ANIMATION_DURATION = 8000;
     private int mLevel;
+    private int mScore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +101,21 @@ public class MainActivity extends AppCompatActivity {
 
     public void goButtonClickedHandler(View view) {
         startLevel();
+    }
+
+    @Override
+    public void popBalloon(Balloon balloon, boolean userTouch) {
+        //when the balloon pops, make it disappear
+        mContentView.removeView(balloon);
+        if (userTouch) {
+            mScore++;
+        }
+        updateDisplay();
+
+    }
+
+    private void updateDisplay() {
+        // TODO: 2019-12-20 update the display
     }
 
     private class BalloonLauncher extends AsyncTask<Integer, Integer, Void> {

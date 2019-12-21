@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
@@ -15,6 +16,8 @@ import com.chromsicle.balloonpop.utils.PixelHelper;
 public class Balloon extends ImageView implements Animator.AnimatorListener, ValueAnimator.AnimatorUpdateListener {
 
     private ValueAnimator mAnimator;
+    private BalloonListener mListener;
+    private boolean mPopped; //default value is false;
 
     public Balloon(Context context) {
         super(context);
@@ -22,6 +25,8 @@ public class Balloon extends ImageView implements Animator.AnimatorListener, Val
 
     public Balloon(Context context, int color, int rawHeight) {
         super(context);
+
+        mListener = (BalloonListener) context;
 
         //set the balloon's color
         this.setImageResource(R.drawable.balloon);
@@ -56,6 +61,10 @@ public class Balloon extends ImageView implements Animator.AnimatorListener, Val
 
     @Override
     public void onAnimationEnd(Animator animator) {
+        //balloon's y position is 0, it reached the top without being popped
+        if (!mPopped) {
+            mListener.popBalloon(this, false);
+        }
 
     }
 
@@ -74,5 +83,21 @@ public class Balloon extends ImageView implements Animator.AnimatorListener, Val
         //to make the balloon move, handle the event that occurs each time the animated value changes
         setY((Float) valueAnimator.getAnimatedValue());
 
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (!mPopped && event.getAction() == MotionEvent.ACTION_DOWN) {
+            mListener.popBalloon(this, true);
+            mPopped = true;
+            mAnimator.cancel();
+        }
+        return super.onTouchEvent(event);
+    }
+
+    //listen for the balloon touch event then send a message to the main activity letting it know it happened
+    //need a callback method and to implement it you need a public interface
+    public interface BalloonListener {
+        void popBalloon(Balloon balloon, boolean userTouch);
     }
 }
