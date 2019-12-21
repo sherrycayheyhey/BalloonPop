@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 //use Android Resizer to get all the image sizes needed
 //create a folder to temporarily store them in then set the resource directory to that
@@ -19,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewGroup mContentView;
 
     private int[] mBalloonColors = new int [3];
-    private int mNextColor;
+    private int mNextColor, mScreenWidth, mScreenHeight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +38,19 @@ public class MainActivity extends AppCompatActivity {
         //object that can be referenced to see things in full screen view
         mContentView = findViewById(R.id.activity_main);
 
+        //only get the height and width after the layout is inflated and the screen is set to full screen dimensions
+        ViewTreeObserver viewTreeObserver = mContentView.getViewTreeObserver();
+        if (viewTreeObserver.isAlive()) {
+            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    mContentView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    mScreenWidth = mContentView.getWidth();
+                    mScreenHeight = mContentView.getHeight();
+                }
+            });
+        }
+
         //allow the user to restore the full screen mode
         mContentView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,8 +65,9 @@ public class MainActivity extends AppCompatActivity {
                 if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
                     Balloon b = new Balloon(MainActivity.this, mBalloonColors[mNextColor], 100);
                     b.setX(motionEvent.getX());
-                    b.setY(motionEvent.getY());
+                    b.setY(mScreenHeight); //balloons come from the bottom of the screen
                     mContentView.addView(b);
+                    b.releaseBalloon(mScreenHeight, 3000);
 
                     if(mNextColor + 1 == mBalloonColors.length) {
                         mNextColor = 0;
