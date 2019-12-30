@@ -9,6 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity
     private static final int MIN_ANIMATION_DURATION = 1000;
     private static final int MAX_ANIMATION_DURATION = 8000;
     private static final int NUMBER_OF_PINS = 5;
+    private static final int BALLOONS_PER_LEVEL = 3;
 
     private ViewGroup mContentView;
 
@@ -47,6 +49,11 @@ public class MainActivity extends AppCompatActivity
     //this list will have references to all of the balloons that are visible on the screen
     // each time a new balloon is created it gets added to this list
     private List<Balloon> mBalloons = new ArrayList<>();
+
+    private Button mGoButton;
+    private boolean mPlaying;
+    private boolean mGameStopped = true;
+    private int mBalloonsPopped;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +92,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        //references to visual objects
+        //references to visual objects, aka widget references
         mScoreDisplay = findViewById(R.id.score_display);
         mLevelDisplay = findViewById(R.id.level_display);
         mPinImages.add((ImageView) findViewById(R.id.pushpin1));
@@ -93,6 +100,7 @@ public class MainActivity extends AppCompatActivity
         mPinImages.add((ImageView) findViewById(R.id.pushpin3));
         mPinImages.add((ImageView) findViewById(R.id.pushpin4));
         mPinImages.add((ImageView) findViewById(R.id.pushpin5));
+        mGoButton = findViewById(R.id.go_button);
 
         updateDisplay();
     }
@@ -116,19 +124,54 @@ public class MainActivity extends AppCompatActivity
         setToFullScreen();
     }
 
+    private void startGame() {
+        setToFullScreen();
+        mScore = 0;
+        mLevel = 0;
+        mPinsUsed = 0;
+        //for each loop
+        for (ImageView pin:
+                mPinImages) {
+            pin.setImageResource(R.drawable.pin);
+        }
+        mGameStopped = false;
+        startLevel();
+    }
+
     private void startLevel() {
         mLevel++;
         updateDisplay();
         BalloonLauncher launcher = new BalloonLauncher();
         launcher.execute(mLevel);
+        mPlaying = true;
+        mBalloonsPopped = 0;
+        mGoButton.setText("Stop Game");
+    }
+
+    private void finishLevel() {
+        //this is cool, use String format to pass in the level to the String the right way
+        Toast.makeText(this, String.format("You finished level %d", mLevel), Toast.LENGTH_SHORT).show();
+        mPlaying = false;
+        mGoButton.setText(String.format("Start Level %d", mLevel + 1));
     }
 
     public void goButtonClickedHandler(View view) {
-        startLevel();
+        if (mPlaying) {
+            //user is playing so clicking the button means they want to stop the game completely
+            gameOver(false);
+        } else if (mGameStopped) {
+            //the game has been stopped (or never started) so the user wants to start the game
+            startGame();
+        } else {
+            //the game is going on but the user is between levels so they want to start the level
+            startLevel();
+        }
     }
 
     @Override
     public void popBalloon(Balloon balloon, boolean userTouch) {
+        mBalloonsPopped++;
+
         //when the balloon pops, make it disappear
         mContentView.removeView(balloon);
         //also remove it from the list
@@ -151,6 +194,9 @@ public class MainActivity extends AppCompatActivity
         }
         updateDisplay();
 
+        if (mBalloonsPopped == BALLOONS_PER_LEVEL) {
+            finishLevel();
+        }
     }
 
     private void gameOver(boolean b) {
@@ -163,7 +209,9 @@ public class MainActivity extends AppCompatActivity
             balloon.setPopped(true);
         }
         mBalloons.clear();
-
+        mPlaying = false;
+        mGameStopped = true;
+        mGoButton.setText("Start Game");
     }
 
     private void updateDisplay() {
@@ -187,7 +235,7 @@ public class MainActivity extends AppCompatActivity
             int minDelay = maxDelay / 2;
 
             int balloonsLaunched = 0;
-            while (balloonsLaunched < 3) {
+            while (mPlaying && balloonsLaunched < BALLOONS_PER_LEVEL) {
 
 //              Get a random horizontal position for the next balloon
                 Random random = new Random(new Date().getTime());
