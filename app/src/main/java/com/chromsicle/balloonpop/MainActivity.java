@@ -9,9 +9,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 //use Android Resizer to get all the image sizes needed
@@ -23,20 +27,23 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity
     implements Balloon.BalloonListener{
 
+    //constants
+    //delay is the amount of time between balloon launches
+    private static final int MIN_ANIMATION_DELAY = 500;
+    private static final int MAX_ANIMATION_DELAY = 1500;
+    //duration is the length of each balloon animation
+    //slowest is 1 second, fastest is 8 seconds
+    private static final int MIN_ANIMATION_DURATION = 1000;
+    private static final int MAX_ANIMATION_DURATION = 8000;
+    private static final int NUMBER_OF_PINS = 5;
+
     private ViewGroup mContentView;
 
     private int[] mBalloonColors = new int [3];
     private int mNextColor, mScreenWidth, mScreenHeight;
-    //delay is the amount of time between balloon launches
-    public static final int MIN_ANIMATION_DELAY = 500;
-    public static final int MAX_ANIMATION_DELAY = 1500;
-    //duration is the length of each balloon animation
-    //slowest is 1 second, fastest is 8 seconds
-    public static final int MIN_ANIMATION_DURATION = 1000;
-    public static final int MAX_ANIMATION_DURATION = 8000;
-    private int mLevel;
-    private int mScore;
+    private int mLevel, mScore, mPinsUsed;
     TextView mScoreDisplay, mLevelDisplay;
+    private List<ImageView> mPinImages = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,8 +82,14 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        //references to visual objects
         mScoreDisplay = findViewById(R.id.score_display);
         mLevelDisplay = findViewById(R.id.level_display);
+        mPinImages.add((ImageView) findViewById(R.id.pushpin1));
+        mPinImages.add((ImageView) findViewById(R.id.pushpin2));
+        mPinImages.add((ImageView) findViewById(R.id.pushpin3));
+        mPinImages.add((ImageView) findViewById(R.id.pushpin4));
+        mPinImages.add((ImageView) findViewById(R.id.pushpin5));
 
         updateDisplay();
     }
@@ -117,9 +130,25 @@ public class MainActivity extends AppCompatActivity
         mContentView.removeView(balloon);
         if (userTouch) {
             mScore++;
+        } else {
+            //the balloon got to the top of the screen
+            mPinsUsed++;
+            if (mPinsUsed <= mPinImages.size()) {
+                mPinImages.get(mPinsUsed - 1).setImageResource(R.drawable.pin_off);
+            }
+            if (mPinsUsed == NUMBER_OF_PINS) {
+                gameOver(true);
+                return;
+            } else {
+                Toast.makeText(this, "missed that one!", Toast.LENGTH_SHORT).show();
+            }
         }
         updateDisplay();
 
+    }
+
+    private void gameOver(boolean b) {
+        // TODO: 2019-12-30 implement this method 
     }
 
     private void updateDisplay() {
