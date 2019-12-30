@@ -9,6 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.TextView;
 
 import java.util.Date;
 import java.util.Random;
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity
     public static final int MAX_ANIMATION_DURATION = 8000;
     private int mLevel;
     private int mScore;
+    TextView mScoreDisplay, mLevelDisplay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +74,11 @@ public class MainActivity extends AppCompatActivity
                 setToFullScreen();
             }
         });
+
+        mScoreDisplay = findViewById(R.id.score_display);
+        mLevelDisplay = findViewById(R.id.level_display);
+
+        updateDisplay();
     }
 
     private void setToFullScreen() {
@@ -95,6 +102,7 @@ public class MainActivity extends AppCompatActivity
 
     private void startLevel() {
         mLevel++;
+        updateDisplay();
         BalloonLauncher launcher = new BalloonLauncher();
         launcher.execute(mLevel);
     }
@@ -115,7 +123,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void updateDisplay() {
-        // TODO: 2019-12-20 update the display
+        mScoreDisplay.setText(String.valueOf(mScore));
+        mLevelDisplay.setText(String.valueOf(mLevel));
     }
 
     private class BalloonLauncher extends AsyncTask<Integer, Integer, Void> {
