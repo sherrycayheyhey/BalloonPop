@@ -95,6 +95,14 @@ public class Balloon extends ImageView implements Animator.AnimatorListener, Val
         return super.onTouchEvent(event);
     }
 
+    //stops the animation when game over
+    public void setPopped(boolean popped) {
+        mPopped = popped;
+        if (popped) {
+            mAnimator.cancel();
+        }
+    }
+
     //listen for the balloon touch event then send a message to the main activity letting it know it happened
     //need a callback method and to implement it you need a public interface
     public interface BalloonListener {

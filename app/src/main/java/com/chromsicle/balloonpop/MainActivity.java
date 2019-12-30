@@ -44,6 +44,9 @@ public class MainActivity extends AppCompatActivity
     private int mLevel, mScore, mPinsUsed;
     TextView mScoreDisplay, mLevelDisplay;
     private List<ImageView> mPinImages = new ArrayList<>();
+    //this list will have references to all of the balloons that are visible on the screen
+    // each time a new balloon is created it gets added to this list
+    private List<Balloon> mBalloons = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,6 +131,9 @@ public class MainActivity extends AppCompatActivity
     public void popBalloon(Balloon balloon, boolean userTouch) {
         //when the balloon pops, make it disappear
         mContentView.removeView(balloon);
+        //also remove it from the list
+        mBalloons.remove(balloon);
+
         if (userTouch) {
             mScore++;
         } else {
@@ -148,7 +154,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void gameOver(boolean b) {
-        // TODO: 2019-12-30 implement this method 
+        //when the game is over, remove all existing balloons from the screen
+        Toast.makeText(this, "Game Over", Toast.LENGTH_SHORT).show();
+       //this is a for each loop
+        for (Balloon balloon:
+                mBalloons) {
+            mContentView.removeView(balloon);
+            balloon.setPopped(true);
+        }
+        mBalloons.clear();
+
     }
 
     private void updateDisplay() {
@@ -205,6 +220,7 @@ public class MainActivity extends AppCompatActivity
     private void launchBalloon(int x) {
 
         Balloon balloon = new Balloon(this, mBalloonColors[mNextColor], 150);
+        mBalloons.add(balloon); //adds to the list
 
         if (mNextColor + 1 == mBalloonColors.length) {
             mNextColor = 0;
