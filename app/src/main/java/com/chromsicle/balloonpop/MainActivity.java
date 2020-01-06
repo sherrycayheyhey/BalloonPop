@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity
         updateDisplay();
 
         //instantiate the sound object
-        mSoundHelper = new SoundHelper();
+        mSoundHelper = new SoundHelper(this);
         //prepare the music player object
         mSoundHelper.prepareMusicPlayer(this);
     }
@@ -184,6 +184,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void popBalloon(Balloon balloon, boolean userTouch) {
         mBalloonsPopped++;
+        mSoundHelper.playSound();
 
         //when the balloon pops, make it disappear
         mContentView.removeView(balloon);
