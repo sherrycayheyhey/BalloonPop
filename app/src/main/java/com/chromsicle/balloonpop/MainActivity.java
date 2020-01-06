@@ -14,6 +14,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.chromsicle.balloonpop.utils.HighScoreHelper;
+import com.chromsicle.balloonpop.utils.SimpleAlertDialog;
+import com.chromsicle.balloonpop.utils.SoundHelper;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -54,6 +58,9 @@ public class MainActivity extends AppCompatActivity
     private boolean mPlaying;
     private boolean mGameStopped = true;
     private int mBalloonsPopped;
+
+    //sounds
+    private SoundHelper mSoundHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +110,11 @@ public class MainActivity extends AppCompatActivity
         mGoButton = findViewById(R.id.go_button);
 
         updateDisplay();
+
+        //instantiate the sound object
+        mSoundHelper = new SoundHelper();
+        //prepare the music player object
+        mSoundHelper.prepareMusicPlayer(this);
     }
 
     private void setToFullScreen() {
@@ -136,6 +148,7 @@ public class MainActivity extends AppCompatActivity
         }
         mGameStopped = false;
         startLevel();
+        mSoundHelper.playMusic();
     }
 
     private void startLevel() {
@@ -199,10 +212,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void gameOver(boolean b) {
+    private void gameOver(boolean allPinsUsed) {
         //when the game is over, remove all existing balloons from the screen
         Toast.makeText(this, "Game Over", Toast.LENGTH_SHORT).show();
-       //this is a for each loop
+       mSoundHelper.pauseMusic();
+
+        //this is a for each loop
         for (Balloon balloon:
                 mBalloons) {
             mContentView.removeView(balloon);
@@ -212,6 +227,16 @@ public class MainActivity extends AppCompatActivity
         mPlaying = false;
         mGameStopped = true;
         mGoButton.setText("Start Game");
+
+        if (allPinsUsed) {
+            //the game was lost
+            if (HighScoreHelper.isTopScore(this, mScore)) {
+                HighScoreHelper.setTopScore(this, mScore);
+                SimpleAlertDialog dialog = SimpleAlertDialog.newInstance("New High Score!",
+                        String.format("Your new high score is %d", mScore));
+                        dialog.show(getSupportFragmentManager(), null);
+            }
+        }
     }
 
     private void updateDisplay() {
